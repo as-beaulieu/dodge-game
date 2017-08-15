@@ -12,6 +12,9 @@ namespace DodgeGame
         */
         public Game()
         {
+            //Clearing the screen at game start
+            Console.Clear();
+
             //Instantiate a Unit that will represent the player.
             //new Unit has () because you can pass variables in (to the constructor)
             playerUnit = new PlayerUnit(15, 17, "H"); //Unit(15, 20, "H");
@@ -51,6 +54,18 @@ namespace DodgeGame
                 enemyUnits[i] = new EnemyUnit(Console.WindowWidth - 1, row, "M");
             }
 
+            //Making an array of UpSlopeEnemies
+            upSlopeEnemies = new Unit[numEnemies / 5]; //Want a lot fewer of these
+
+            for (int i = 0; i < upSlopeEnemies.Length; i++)
+            {
+                //Setting a random row for the enemy to appear
+                int yStart = Console.WindowHeight - 1;
+                int xStart = random.Next(Console.WindowWidth / 4, Console.WindowWidth - 1);
+                //Filling each index with it's own EnemyUnit
+                upSlopeEnemies[i] = new UpSlopeEnemy(xStart, yStart, "N");
+            }
+
             stopwatch = new Stopwatch();
 
         }
@@ -68,6 +83,7 @@ namespace DodgeGame
         //private Unit enemyUnit; obsolete with multiple enemies on screen
         private int numEnemies = 30;
         private Unit[] enemyUnits; //Unit[] = An Array of enemy units
+        private Unit[] upSlopeEnemies;
 
         /*
         So even though these are marked as the type of their parents, since
@@ -108,13 +124,26 @@ namespace DodgeGame
 
                 //First, Update all units
                 playerUnit.Update(deltaTime); //PlayerUnit has its own Update()
+                //Update and check for collisions on enemyUnits
                 for(int i = 0; i < enemyUnits.Length; i++)
                 {
                     //update the enemy
                     enemyUnits[i].Update(deltaTime); //Relies on parent Unit Update()
-
+                    
                     //Now that all units have moved, let's see if the player is colliding with an enemy
                     if (playerUnit.IsCollidingWith(enemyUnits[i]))
+                    {
+                        GameOver(); //If so, then game over
+                        return; //Break out of the game loop
+                    } 
+                }
+
+                //Update and check for collisions on upSlopeEnemies
+                for(int i = 0; i < upSlopeEnemies.Length; i++)
+                {
+                    upSlopeEnemies[i].Update(deltaTime);
+
+                    if (playerUnit.IsCollidingWith(upSlopeEnemies[i]))
                     {
                         GameOver(); //If so, then game over
                         return; //Break out of the game loop
@@ -128,6 +157,11 @@ namespace DodgeGame
                 foreach(Unit u in enemyUnits)
                 {
                     u.Draw();
+                }
+
+                foreach(Unit p in upSlopeEnemies)
+                {
+                    p.Draw();
                 }
 
                 //Draw the score in bottom left

@@ -18,7 +18,7 @@ namespace DodgeGame
             //Be dormant for up to one second
             sleepForMS = Game.RandomNum(0, 1000); //In milliseconds
             //And change up how fast some are
-            TimeBetweenMoves = Game.RandomNum(25, 40);
+            TimeBetweenMoves = Game.RandomNum(25, 60); //bigger spread
         }
 
         //If TimeBetweenMoves ++, then enemy speed --
@@ -69,22 +69,24 @@ namespace DodgeGame
                 //by reducing TimeBetweenMoves
                 TimeBetweenMoves = (int)(TimeBetweenMoves * 0.95);
                 //But lets keep a minimum time limit
-                if (TimeBetweenMoves < 10)
+                if (TimeBetweenMoves < 30)
                 {
                     //Keep time to something sane.
-                    TimeBetweenMoves = 10;
+                    TimeBetweenMoves = 30;
+                    //Want something much slower now that other types
+                    //are in the game
                 }
 
                 //Give the player a point when the enemy 'leaves' the map
                 //Game.Score = Game.Score + 1;
-                if (TimeBetweenMoves < 50)
+                if (TimeBetweenMoves > 100)
                 {
                     //Standard Score
                     Game.Score += 1;
                 }
-                else if (TimeBetweenMoves < 100)
+                else if (TimeBetweenMoves > 50 && TimeBetweenMoves <= 100 )
                 {
-                    //Bonus for surviving
+                    //Bonus for surviving faster enemies
                     Game.Score += 2;
                 }
                 else
