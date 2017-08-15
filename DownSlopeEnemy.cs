@@ -1,16 +1,20 @@
 ﻿using System;
-
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace DodgeGame
 {
-    class UpSlopeEnemy : Unit
+    class DownSlopeEnemy : Unit
     {
         //Constructor
-        public UpSlopeEnemy(int x, int y, string UnitGraphic) : base (x, y, UnitGraphic)
+        public DownSlopeEnemy(int x, int y, string UnitGraphic) : base (x, y, UnitGraphic)
         {
             sleepForMS = Game.RandomNum(1000, 2000); //in milliseconds
             TimeBetweenMoves = Game.RandomNum(100, 300); //Slow movers
         }
+        //End Constructor
 
         //If TimeBetweenMoves ++, then enemy speed --
         public int TimeBetweenMoves; //In Milliseconds
@@ -37,19 +41,20 @@ namespace DodgeGame
 
             timeSinceLastMove -= TimeBetweenMoves; //'Reset' the counter
 
-            //These enemies move diagonally up and left
-            if (X > 0 && Y > 0)
+            //These enemies move diagonally down and left
+            if (    X > 0 
+                    && Y < Console.WindowHeight - 1
+                )
             {
                 X -= 1; //Left
-                Y -= 1; //Up
+                Y += 1; //Up
             }
             else
             {
                 //We are at our move limit, so start again
                 //Randomizing X and Y starting locations
                 X = Game.RandomNum(Console.WindowWidth / 4, Console.WindowWidth - 1);
-                //Y = Game.RandomNum(Console.WindowHeight / 4, Console.WindowHeight - 1);
-                Y = Console.WindowHeight - 1;
+                Y = 1;
 
                 //And sleep for a moment, to break up the creation more
                 sleepForMS = Game.RandomNum(0, 2000); //in milliseconds
@@ -59,7 +64,7 @@ namespace DodgeGame
 
                 //Give the player a point when the enemy 'leaves' the map
                 Game.Score += 1; //No bonus since don't move too fast
-                
+
 
                 base.Update(deltaTime);
             }

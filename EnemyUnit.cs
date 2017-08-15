@@ -18,7 +18,7 @@ namespace DodgeGame
             //Be dormant for up to one second
             sleepForMS = Game.RandomNum(0, 1000); //In milliseconds
             //And change up how fast some are
-            TimeBetweenMoves = Game.RandomNum(25, 60); //bigger spread
+            TimeBetweenMoves = Game.RandomNum(25, 100); //bigger spread
         }
 
         //If TimeBetweenMoves ++, then enemy speed --

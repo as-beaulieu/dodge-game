@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Diagnostics;
+using System.IO;
 
 namespace DodgeGame
 {
@@ -17,7 +18,7 @@ namespace DodgeGame
 
             //Instantiate a Unit that will represent the player.
             //new Unit has () because you can pass variables in (to the constructor)
-            playerUnit = new PlayerUnit(15, 17, "H"); //Unit(15, 20, "H");
+            playerUnit = new PlayerUnit(15, 17, ">"); //Unit(15, 20, "H");
             /*
             allowed since 'set' for X was set to public
             secretly setting _x, allowing for validity checking
@@ -66,6 +67,18 @@ namespace DodgeGame
                 upSlopeEnemies[i] = new UpSlopeEnemy(xStart, yStart, "N");
             }
 
+            //Making an array of DownSlopeEnemies
+            downSlopeEnemies = new Unit[numEnemies / 5]; //Want a lot fewer of these
+
+            for (int i = 0; i < downSlopeEnemies.Length; i++)
+            {
+                //Setting a random row for the enemy to appear
+                int yStart = 1;
+                int xStart = random.Next(Console.WindowWidth / 4, Console.WindowWidth - 1);
+                //Filling each index with it's own EnemyUnit
+                downSlopeEnemies[i] = new DownSlopeEnemy(xStart, yStart, "N");
+            }
+
             stopwatch = new Stopwatch();
 
         }
@@ -83,7 +96,9 @@ namespace DodgeGame
         //private Unit enemyUnit; obsolete with multiple enemies on screen
         private int numEnemies = 30;
         private Unit[] enemyUnits; //Unit[] = An Array of enemy units
+        //Arrays of diagonal enemies
         private Unit[] upSlopeEnemies;
+        private Unit[] downSlopeEnemies;
 
         /*
         So even though these are marked as the type of their parents, since
@@ -133,6 +148,7 @@ namespace DodgeGame
                     //Now that all units have moved, let's see if the player is colliding with an enemy
                     if (playerUnit.IsCollidingWith(enemyUnits[i]))
                     {
+                        PrintScore();
                         GameOver(); //If so, then game over
                         return; //Break out of the game loop
                     } 
@@ -145,6 +161,20 @@ namespace DodgeGame
 
                     if (playerUnit.IsCollidingWith(upSlopeEnemies[i]))
                     {
+                        PrintScore();
+                        GameOver(); //If so, then game over
+                        return; //Break out of the game loop
+                    }
+                }
+
+                //Update and check for collisions on downSlopeEnemies
+                for (int i = 0; i < upSlopeEnemies.Length; i++)
+                {
+                    downSlopeEnemies[i].Update(deltaTime);
+
+                    if (playerUnit.IsCollidingWith(downSlopeEnemies[i]))
+                    {
+                        PrintScore();
                         GameOver(); //If so, then game over
                         return; //Break out of the game loop
                     }
@@ -162,6 +192,11 @@ namespace DodgeGame
                 foreach(Unit p in upSlopeEnemies)
                 {
                     p.Draw();
+                }
+
+                foreach(Unit q in downSlopeEnemies)
+                {
+                    q.Draw();
                 }
 
                 //Draw the score in bottom left
@@ -188,11 +223,28 @@ namespace DodgeGame
         }
         //End Run()
 
+        void PrintScore()
+        {
+            // Write single line to new file.
+            using (StreamWriter writer = new StreamWriter("HighScores.txt", true))
+            {
+                writer.WriteLine("Important data line 1");
+            }
+            // Append line to the file.
+            using (StreamWriter writer = new StreamWriter("HighScores.txt", true))
+            {
+                writer.WriteLine(Score);
+            }
+        }
+
+        //using (StreamWriter writer = new StreamWriter("D:\\log.txt", true))
+
         void GameOver()
         {
             Console.Clear();
-            Console.WriteLine("Game Over! Final Score: " + Game.Score);
+            Console.WriteLine("Game Over! Final Score: " + Score);
             Console.SetCursorPosition(0, Console.WindowHeight - 1);
         }
+        //End GameOver()
     }
 }
