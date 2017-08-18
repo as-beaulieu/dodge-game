@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Diagnostics;
-using System.IO;
+using System.IO; //Read and write files
 
 namespace DodgeGame
 {
@@ -226,14 +226,13 @@ namespace DodgeGame
         void PrintScore()
         {
             // Write single line to new file.
-            using (StreamWriter writer = new StreamWriter("HighScores.txt", true))
-            {
-                writer.WriteLine("Important data line 1");
-            }
-            // Append line to the file.
-            using (StreamWriter writer = new StreamWriter("HighScores.txt", true))
+            //@ notes working directory
+            //True means Append line to the file.
+            using (StreamWriter writer = new StreamWriter(@"HighScores.txt", true))
             {
                 writer.WriteLine(Score);
+                //Always Close() when done, it saves and closes the file
+                writer.Close();
             }
         }
 
